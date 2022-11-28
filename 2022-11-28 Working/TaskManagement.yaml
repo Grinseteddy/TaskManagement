@@ -1,14 +1,19 @@
 openapi: 3.0.3
 info:
-  title: Title
-  description: Title
+  title: Task Management
+  description: |
+    This is a API allowing access to task management. Task management allows the management
+    of tasks of an empoloyee inside of a team.
   version: 1.0.0
 servers:
-  - url: 'https'
+  - url: 'https://meinefirma.com/taskmanagement'
 
 tags:
+  - name: task
+    description: is task which can be performed by an employee
 
 paths:
+
 
 components:
   schema:
