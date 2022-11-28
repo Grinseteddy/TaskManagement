@@ -1,0 +1,208 @@
+openapi: 3.0.3
+info:
+  title: Task Management
+  description: |
+    This is a API allowing access to task management. Task management allows the management
+    of tasks of an empoloyee inside of a team.
+  version: 1.0.0
+servers:
+  - url: 'https://meinefirma.com/taskmanagement'
+
+tags:
+  - name: task
+    description: is task which can be performed by an employee
+
+paths:
+  /tasks:
+    get:
+      description: Delivers tasks of team independent of their status
+      operationId: getTasksByTeam
+      parameters:
+        - name: team
+          in: query
+          description: UUID of the team the tasks are asked for
+          required: true
+          schema:
+            type: string
+            format: uuid
+            example: 0e62c4b9-34bd-422c-8a6c-40f16c451214
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/task'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '../Samples/ErrorCatalog.yaml/#/components/schemas/Error'
+        '401':
+          description: Unauthorized access
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '../Samples/ErrorCatalog.yaml/#/components/schemas/Error'
+
+    post:
+      description: Creates a new task in task management
+      operationId: createNewTask
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/task'
+      responses:
+        '201':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: string
+
+
+  /tasks/{id}:
+    get:
+      description: Delivers a tasks by its ID
+      operationId: getTaskById
+      parameters:
+        - name: id
+          in: path
+          description: An entity found by id
+          required: true
+          schema:
+            type: string
+            format: uuid
+            example: 0e62c4b9-34bd-422c-8a6c-40f16c451214
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/task'
+        '404':
+          description: Task not found
+
+    put:
+      description: Updates a task by its ID
+      operationId: updateTaskById
+      parameters:
+        - name: id
+          in: path
+          description: An entity found by id
+          required: true
+          schema:
+            type: string
+            format: uuid
+            example: 0e62c4b9-34bd-422c-8a6c-40f16c451214
+      requestBody:
+        content:
+          application/json:
+            schema:
+                $ref: '#/components/schemas/task'
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: string
+
+
+
+components:
+  schemas:
+    task:
+      description: Task of an employee to perform
+      type: object
+      required:
+        - dueDate
+        - title
+        - createdBy
+      properties:
+        self:
+          description: ID of the particular task
+          type: string
+          format: uuid
+          example: 0e62c4b9-34bd-422c-8a6c-40f16c451214
+
+        assignee:
+          description: Assignee of the task - it the ID of an employee
+          type: string
+          format: uuid
+          example: 0e62c4b9-34bd-422c-8a6c-40f16c451214
+
+        status:
+          description: Status of an task
+          type: string
+          enum:
+            - new
+            - assigned
+            - in Progress
+            - Done
+          default: new
+          example: assigned
+
+        dueDate:
+          description: Date when task is due
+          type: string
+          format: date
+          example: 2022-11-28
+
+        documents:
+          description: Documents belonging to the task
+          type: array
+          items:
+            type: string
+            format: uuid
+            example: 0e62c4b9-34bd-422c-8a6c-40f16c451214
+
+        title:
+          description: Describes the content of the task
+          type: string
+          # Clarify with business minLength and maxLength
+          example: Do what you must
+
+        note:
+          description: Note to the task done by assignee
+          type: string
+          # Clarify with business minLength and maxLength
+          example: Detail of do what you must
+
+        createdBy:
+          description: System or employee who created the task
+          type: string
+          format: uuid
+          example: 0e62c4b9-34bd-422c-8a6c-40f16c451214
+
+        createdOn:
+          description: Date time when task was created
+          type: string
+          format: date-time
+          example: 2022-11-2800:00:01T+01
+
+        updatedBy:
+          description: System or employee who created the task
+          type: string
+          format: uuid
+          example: 0e62c4b9-34bd-422c-8a6c-40f16c451214
+
+        updatedOn:
+          description: Date time when task was created
+          type: string
+          format: date-time
+          example: 2022-11-2800:00:01T+01
+
+
+  
