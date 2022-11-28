@@ -1,0 +1,92 @@
+openapi: 3.0.3
+info:
+  title: Utilities for CISL++ to define APIs
+  description: Utilities for CISL++ to define APIs
+  version: 1.0.0
+servers:
+  - url: '.'
+tags:
+  - name: reference
+    description: A reference to a business object inlcuding type information
+paths:
+  /ping:
+    get:
+      summary: Checks if the server is running
+      security:
+        [ ] #No security
+      responses:
+        '200':
+          description: Server is up and running
+        default:
+          description: Something is wrong
+
+components:
+  schemas:
+
+    Relations:
+      description: |
+        Relations deliver the relations of an entity to other entities - either as parent (the object which contains
+        the current object e.g. a person containing an address) or as trigger (the object whicht triggered the creation
+        of the current object e.g. a lead triggered a prospect)
+      type: object
+      properties:
+        parent:
+          $ref: '#/components/schemas/Reference'
+        trigger:
+          $ref: '#/components/schemas/Reference'
+
+    References:
+      description: |
+        References can be used to to refer from one object to another object when the parent or the trigger relation is
+        not suitable, e.g. a task triggered by a lead and refering to a couple of other documents e.g. a drivers license
+      type: array
+      items:
+        $ref: '#/components/schemas/Reference'
+
+    Reference:
+      description: |
+        A reference can be used to refere to other object using a UUID. The reference is given as URL, so that it can
+        be used directly to access the referenced object.
+      type: object
+      required:
+        - self
+        - typeName
+      properties:
+        self:
+          type: string
+          example: 5081a4bf-3378-4644-886e-59a7a2c386f1
+        typeName:
+          type: string
+          example: cislplusplus/core/prospect
+        url:
+          type: string
+          format: uri
+          example: 'https://www.allianz.com/prospect/5081a4bf-3378-4644-886e-59a7a2c386f1'
+
+    Message:
+      description: A  notification which can be used to inform the user about certain things
+      type: object
+      properties:
+        messageCode:
+          description: ID of the notification message
+          type: string
+          format: uuid
+          example: eb5a5ea0-ac86-4cb2-b5e7-2c8512891fd3
+        message:
+          description: Text of the notification
+          type: string
+          minLength: 5
+          maxLength: 1024
+          example: Your policy were successful issued.
+        messageType:
+          description: notification type e.g. info or warning, Errors need to be handled as http error
+          type: string
+          enum:
+            - Information
+            - Warning
+          example: Information
+
+
+
+
+

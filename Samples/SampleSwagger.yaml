@@ -1,0 +1,286 @@
+openapi: 3.0.3
+info:
+  title: Sample Swagger
+  description: ... Please Copy ...
+  version: 1.0.0
+  contact:
+    email: annegret.junker@allianz.de
+servers:
+  - url: 'www.allianz.com/taskmanagement'
+tags:
+  - name: task
+    description: everything one needs to do
+paths:
+  /ping:
+    get:
+      summary: Checks if the server is running
+      security:
+        [] # no security
+      responses:
+        '200':
+          description: Server is up and running
+        default:
+          description: Something is wrong
+    options:
+      summary: delivers back the request methods provided by the according target ressource
+      security:
+        [] # no security
+      responses:
+        '200':
+          description: Successful operation
+
+  /tasks:
+    get:
+      summary: View with an array of an entity
+      tags:
+        - task
+      description: |
+        To deliver views on data entities a plural should be used to make clear that arrays of entities are to be expected
+      operationId: findEntityBySomething
+      security:
+        - OAuth2:
+            - read
+      parameters:
+        - name: something
+          in: query
+          description: List of entities can be found by something
+          explode: true
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Entity'
+        '403':
+          description: Access token does not have the required scope
+        '404':
+          description: Entities not found
+          content:
+            application/json:
+              schema:
+                $ref: './ErrorCatalog.yaml#/components/schemas/Error'
+  /task:
+    post:
+      summary: Posts a new entity to the system
+      tags:
+        - task
+      description: |
+        Creates a new entity in the system in a synchron request, the response contains the reference to the new object
+      operationId: addAnEntity
+      security:
+        - OAuth2:
+            - read
+            - write
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Entity'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: './Utilities.yaml#/components/schemas/Reference'
+        '400':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: './ErrorCatalog.yaml#/components/schemas/Error'
+        '403':
+          description: Access token does not have the required scope
+
+    #----unusual verbs -------------------------
+    head:
+      responses:
+        '200':
+          description: successful operation
+  #-------------------------------------------
+
+
+  /task/{id}:
+    get:
+      summary: Get an entity via UUID
+      tags:
+        - task
+      description: Delivers an enitity via UUID
+      operationId: findEntityById
+      security:
+        - OAuth2:
+            - read
+      parameters:
+        - name: id
+          in: path
+          description: An entity found by id
+          required: true
+          schema:
+            type: string
+            format: uuid
+            example: 0e62c4b9-34bd-422c-8a6c-40f16c451214
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Entity'
+        '400':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: './ErrorCatalog.yaml#/components/schemas/Error'
+        '403':
+          description: Access token does not have the required scope
+
+    put:
+      summary: Updates an existing entity
+      description: Updates an existing entity
+      operationId: updateEntity
+      security:
+        - OAuth2:
+            - read
+            - write
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            example: 0e62c4b9-34bd-422c-8a6c-40f16c451214
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Entity'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: './ErrorCatalog.yaml#/components/schemas/Error'
+        '400':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: './ErrorCatalog.yaml#/components/schemas/Error'
+        '403':
+          description: Access token does not have the required scope
+        '404':
+          description: Entity not found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: './ErrorCatalog.yaml#/components/schemas/Error'
+
+    #----unusual verbs -------------------------
+    patch:
+      responses:
+        '200':
+          description: successful operation
+
+    trace:
+      responses:
+        '200':
+          description: succesful operation
+    #------------------------------------------
+
+    delete:
+      summary: Deletes the specified ressource
+      tags:
+        - task
+      description: Deletes the specified ressource
+      operationId: deleteEntity
+      security:
+        - OAuth2:
+            - read
+            - write
+            - admin
+      parameters:
+        - name: id
+          in: path
+          description: Entity ID of entity to be deleted
+          required: true
+          schema:
+            type: string
+            format: uuid
+            example: 0e62c4b9-34bd-422c-8a6c-40f16c451214
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                description: delivers back the UUID of the deleted object
+                type: string
+                format: uuid
+                example: 0e62c4b9-34bd-422c-8a6c-40f16c451214
+        '400':
+          description: Invalid ID supplied
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: './ErrorCatalog.yaml#/components/schemas/Error'
+        '403':
+          description: Access token does not have the required scope
+        '404':
+          description: Entity not found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: './ErrorCatalog.yaml#/components/schemas/Error'
+
+components:
+  securitySchemes:
+    OAuth2:
+      type: oauth2
+      flows:
+        authorizationCode:
+          authorizationUrl: https://allianz.com/idp/oauth/authorize
+          tokenUrl: https://allianz/idp/oauth/token
+          scopes:
+            read: Grants read access
+            write: Grants write access
+            admin: Grants acces to admin operations
+  schemas:
+    task:
+      description: What is a task
+      type: object
+      required:
+        - self
+
+      properties:
+        self:
+          type: string
+          format: uuid
+          example: 0e62c4b9-34bd-422c-8a6c-40f16c451214
+# something is missing here
+
+
+  
+

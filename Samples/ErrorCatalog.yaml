@@ -1,0 +1,63 @@
+openapi: 3.0.3
+info:
+  title: Error Catalog
+  description: Error Catalog
+  version: 1.0.0
+servers:
+  - url: '.'
+paths:
+  /errors:
+    get:
+      summary: Returns all errors defined in the catalog
+      description:
+        All errors for a certain domain service MUST be provided in a catalog. The catalog MUST be available via a servcice.
+      responses:
+        '200':
+          description: Returns all error definitions as an array
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Error'
+
+
+components:
+  schemas:
+    Error:
+      description: Contains error definitions for a catalog
+      type: object
+      properties:
+        errorCode:
+          description:  Code of the error to find it faster
+          type: string
+          example: T6789
+        type:
+          description: type of the according error
+          type: string
+          example: /errors/incorrect-user-pass
+        title:
+          description: title of the according error
+          type: string
+          example: Incorrect user or password
+        status:
+          description: HTTP status code belongig to this error
+          type: integer
+          example: 401
+        detail:
+          description: More detailed information about an error
+          type: string
+          example: Authentication failed due to incorrect username or password
+        level:
+          description: Gives the level of the according error
+          type: string
+          enum: [debug, info, normal, fatal]
+          example: normal
+        instance:
+          description: Contains the server instance as URI at which the error occured
+          type: string
+          example: "/login/log/abc123"
+
+
+
+  
