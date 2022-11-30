@@ -40,10 +40,6 @@ components:
           description: title of the according error
           type: string
           example: Incorrect user or password
-        status:
-          description: HTTP status code belongig to this error
-          type: integer
-          example: 401
         detail:
           description: More detailed information about an error
           type: string

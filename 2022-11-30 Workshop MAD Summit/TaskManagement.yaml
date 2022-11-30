@@ -38,6 +38,10 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/task'
+        '401':
+          description: Access denied
+        '404':
+          description: Task not found
 
 
     post:
@@ -64,6 +68,21 @@ paths:
                 type: string
                 format: uuid
                 example: a681cc44-f021-41a4-816b-d55b436d0578
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '../Samples/ErrorCatalog.yaml/#/components/schemas/Error'
+        '401':
+          description: Unauthorized access
+        '404':
+          description: Team not found
+
+
+
       # Could be a reference to the task object - see utilities or even HATEOS links
 
 
@@ -93,6 +112,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/task'
+        '401':
+          description: Unauthorized requests
+        '404':
+          description: Task not found
 
     put:
       summary:  Changes a particular task
@@ -125,6 +148,22 @@ paths:
                 type: string
                 format: uuid
                 example: a681cc44-f021-41a4-816b-d55b436d0578
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '../Samples/ErrorCatalog.yaml/#/components/schemas/Error'
+        '401':
+          description: Unauthorized access
+        '404':
+          description: Task not found
+          content:
+            application/json:
+              schema:
+                $ref: '../Samples/ErrorCatalog.yaml/#/components/schemas/Error'
 
 
 
