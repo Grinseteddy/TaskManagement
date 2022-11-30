@@ -4,10 +4,227 @@ info:
   description: Title
   version: 1.0.0
 servers:
-  - url: 'https'
+  - url: 'https://unsereschoenstefirma.de/taskmanagement'
+tags:
+  - name: task
+    description: Tasks to be done by an employee
 paths:
+  /tasks:
+    get:
+      summary: Task list of new or assigned tasks of a team
+      tags:
+        - task
+      description: |
+        To deliver views on data entities a plural should be used to make clear that arrays of entities are to be expected
+      operationId: findTasksByTeam
+      security:
+        - OAuth2:
+            - read
+      parameters:
+        - name: team
+          in: query
+          description: List of entities can be found by something
+          required: true
+          schema:
+            type: string
+            format: uuid
+            example: a681cc44-f021-41a4-816b-d55b436d0578
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/task'
+
+
+    post:
+      summary:  Creates a new task for a certain team
+      tags:
+        - task
+      description: Creates a new task for a team in the status new
+      operationId: createTask
+      security:
+        - OAuth2:
+            - read
+            - write
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/taskRequest'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: string
+                format: uuid
+                example: a681cc44-f021-41a4-816b-d55b436d0578
+      # Could be a reference to the task object - see utilities or even HATEOS links
+
+
+
+
+  /tasks/{id}:
+    get:
+      summary: Delivers a task based on its ID
+      tags:
+        - task
+      operationId: findTaskById
+      security:
+        - OAuth2:
+            - read
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            example: a681cc44-f021-41a4-816b-d55b436d0578
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/task'
+
+    put:
+      summary:  Changes a particular task
+      tags:
+        - task
+      security:
+        - OAuth2:
+            - read
+            - write
+      operationId: updateTask
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            example: a681cc44-f021-41a4-816b-d55b436d0578
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/task'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: string
+                format: uuid
+                example: a681cc44-f021-41a4-816b-d55b436d0578
+
+
 
 components:
+  securitySchemes:
+    OAuth2:
+      type: oauth2
+      flows:
+        authorizationCode:
+          authorizationUrl: https://somecompany.com/idp/oauth/authorize
+          tokenUrl: https://somecompany/idp/oauth/token
+          scopes:
+            read: Grants read access
+            write: Grants write access
+            admin: Grants acces to admin operations
   schemas:
+    task:
+      description: Task of an employee to be fulfilled
+      type: object
+      required:
+        - assignedTeam
+        - dueDate
+        - self
+      properties:
+        self:
+          description: ID of the according task
+          type: string
+          readOnly: true
+          format: uuid
+          example: 7168132c-c35c-4c21-a81f-6a06e18cc69e
+        assignee:
+          description: Assignee of the according tasl
+          type: string
+          format: uuid
+          example: 7168132c-c35c-4c21-a81f-6a06e18cc69e
+        assignedTeam:
+          description: Team to which the task is assigned
+          type: string
+          format: uuid
+          example: 7168132c-c35c-4c21-a81f-6a06e18cc69e
+        status:
+          description: Status of the according task
+          type: string
+          enum:
+            - new
+            - assigned
+            - in progress
+            - done
+          default: new
+          example: assigned
+
+        title:
+          description: Title of the task
+          type: string
+          minLength: 10
+          maxLength: 255
+          example: Do it like I want it
+
+        note:
+          default: Note to a task
+          type: string
+          example: I did what I did.
+
+        documents:
+          description: Documents belonging to tasks
+          type: array
+          items:
+            type: string
+
+
+        dueDate:
+          description: Date when task should be done
+          type: string
+          format: date
+          example: 2022-11-30
+
+    taskRequest:
+      description: Task of an employee to be fulfilled
+      type: object
+      required:
+        - assignedTeam
+        - dueDate
+      properties:
+        assignedTeam:
+          description: Team to which the task is assigned
+          type: string
+          format: uuid
+          example: 7168132c-c35c-4c21-a81f-6a06e18cc69e
+        dueDate:
+          description: Date when task should be done
+          type: string
+          format: date
+          example: 2022-11-30
+        title:
+          description: Title of the task
+          type: string
+          minLength: 10
+          maxLength: 255
+          example: Do it like I want it
+
+
 
   
