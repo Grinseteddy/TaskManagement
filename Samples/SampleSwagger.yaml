@@ -6,7 +6,7 @@ info:
   contact:
     email: annegret.junker@allianz.de
 servers:
-  - url: 'www.allianz.com/taskmanagement'
+  - url: 'www.somecompany.com/taskmanagement'
 tags:
   - name: task
     description: everything one needs to do
@@ -261,8 +261,8 @@ components:
       type: oauth2
       flows:
         authorizationCode:
-          authorizationUrl: https://allianz.com/idp/oauth/authorize
-          tokenUrl: https://allianz/idp/oauth/token
+          authorizationUrl: https://somecompany.com/idp/oauth/authorize
+          tokenUrl: https://somecompany/idp/oauth/token
           scopes:
             read: Grants read access
             write: Grants write access
@@ -279,7 +279,7 @@ components:
           type: string
           format: uuid
           example: 0e62c4b9-34bd-422c-8a6c-40f16c451214
-# something is missing here
+
 
 
   
